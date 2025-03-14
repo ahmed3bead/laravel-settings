@@ -1,10 +1,10 @@
 {
-    "name": "ahmed3bead/laravel-settings",
+    "name": "ahmedebead/laravel-settings",
     "description": "App & Models Settings for Laravel",
     "keywords": [
         "laravel-settings"
     ],
-    "homepage": "https://github.com/ahmedebead/settings",
+    "homepage": "https://github.com/ahmed3bead/settings",
     "license": "MIT",
     "authors": [
         {
