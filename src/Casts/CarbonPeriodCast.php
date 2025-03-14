@@ -1,9 +1,9 @@
 <?php
 
-namespace Smartisan\Settings\Casts;
+namespace Ahmed3bead\Settings\Casts;
 
 use Carbon\CarbonPeriod;
-use Smartisan\Settings\Contracts\Castable;
+use Ahmed3bead\Settings\Contracts\Castable;
 
 class CarbonPeriodCast implements Castable
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartisan\Settings\Tests;
+namespace Ahmed3bead\Settings\Tests;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;

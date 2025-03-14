@@ -1,6 +1,6 @@
 <?php
 
-use Smartisan\Settings\Settings;
+use Ahmed3bead\Settings\Settings;
 
 if (! function_exists('settings')) {
     /**

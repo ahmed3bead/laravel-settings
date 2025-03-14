@@ -1,10 +1,10 @@
 {
-    "name": "smartisan/settings",
+    "name": "Ahmed3bead/laravel-settings",
     "description": "App & Models Settings for Laravel",
     "keywords": [
         "laravel-settings"
     ],
-    "homepage": "https://github.com/itsmohd/settings",
+    "homepage": "https://github.com/ahmedebead/settings",
     "license": "MIT",
     "authors": [
         {
@@ -26,7 +26,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Smartisan\\Settings\\": "src"
+            "Ahmed3bead\\Settings\\": "src"
         },
         "files": [
             "src/Support/settings.php"
@@ -34,7 +34,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Smartisan\\Settings\\Tests\\": "tests"
+            "Ahmed3bead\\Settings\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -47,10 +47,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Smartisan\\Settings\\SettingsServiceProvider"
+                "Ahmed3bead\\Settings\\SettingsServiceProvider"
             ],
             "aliases": {
-                "Settings": "Smartisan\\Settings\\Facades\\Settings"
+                "Settings": "Ahmed3bead\\Settings\\Facades\\Settings"
             }
         }
     },

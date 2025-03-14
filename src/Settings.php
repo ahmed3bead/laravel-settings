@@ -1,11 +1,11 @@
 <?php
 
-namespace Smartisan\Settings;
+namespace Ahmed3bead\Settings;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Database\Eloquent\Model;
-use Smartisan\Settings\Contracts\Repository;
-use Smartisan\Settings\Exceptions\CastHandlerException;
+use Ahmed3bead\Settings\Contracts\Repository;
+use Ahmed3bead\Settings\Exceptions\CastHandlerException;
 
 class Settings
 {

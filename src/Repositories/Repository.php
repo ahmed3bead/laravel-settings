@@ -1,9 +1,9 @@
 <?php
 
-namespace Smartisan\Settings\Repositories;
+namespace Ahmed3bead\Settings\Repositories;
 
-use Smartisan\Settings\Contracts\Repository as RepositoryContract;
-use Smartisan\Settings\EntryFilter;
+use Ahmed3bead\Settings\Contracts\Repository as RepositoryContract;
+use Ahmed3bead\Settings\EntryFilter;
 
 abstract class Repository implements RepositoryContract
 {

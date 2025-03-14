@@ -24,7 +24,7 @@ return [
     */
     'repositories' => [
         'database' => [
-            'handler' => Smartisan\Settings\Repositories\DatabaseRepository::class,
+            'handler' => Ahmed3bead\Settings\Repositories\DatabaseRepository::class,
             'connection' => null,
             'table' => 'settings',
         ],
@@ -56,8 +56,8 @@ return [
     |
     */
     'casts' => [
-        Carbon\Carbon::class => \Smartisan\Settings\Casts\CarbonCast::class,
-        Carbon\CarbonPeriod::class => \Smartisan\Settings\Casts\CarbonPeriodCast::class,
+        Carbon\Carbon::class => \Ahmed3bead\Settings\Casts\CarbonCast::class,
+        Carbon\CarbonPeriod::class => \Ahmed3bead\Settings\Casts\CarbonPeriodCast::class,
     ],
 
 ];

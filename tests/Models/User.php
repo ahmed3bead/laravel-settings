@@ -1,9 +1,9 @@
 <?php
 
-namespace Smartisan\Settings\Tests\Models;
+namespace Ahmed3bead\Settings\Tests\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Smartisan\Settings\HasSettings;
+use Ahmed3bead\Settings\HasSettings;
 
 class User extends Model
 {

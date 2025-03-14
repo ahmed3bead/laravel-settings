@@ -1,14 +1,14 @@
 <?php
 
-namespace Smartisan\Settings\Tests;
+namespace Ahmed3bead\Settings\Tests;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Arr;
-use Smartisan\Settings\CastHandler;
-use Smartisan\Settings\Tests\Casts\AnotherCast;
-use Smartisan\Settings\Tests\Casts\DummyCast;
-use Smartisan\Settings\Tests\Models\DummyClass;
+use Ahmed3bead\Settings\CastHandler;
+use Ahmed3bead\Settings\Tests\Casts\AnotherCast;
+use Ahmed3bead\Settings\Tests\Casts\DummyCast;
+use Ahmed3bead\Settings\Tests\Models\DummyClass;
 
 class CastHandlerTest extends TestCase
 {

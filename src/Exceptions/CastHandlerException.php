@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartisan\Settings\Exceptions;
+namespace Ahmed3bead\Settings\Exceptions;
 
 use Exception;
 

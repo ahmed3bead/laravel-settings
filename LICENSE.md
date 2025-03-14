@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) Smartisan <mohd.itcs@gmail.com>
+Copyright (c) Ahmed3bead <mohd.itcs@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,8 +1,8 @@
 <?php
 
-namespace Smartisan\Settings\Tests\Casts;
+namespace Ahmed3bead\Settings\Tests\Casts;
 
-use Smartisan\Settings\Contracts\Castable;
+use Ahmed3bead\Settings\Contracts\Castable;
 
 class DummyCast implements Castable
 {

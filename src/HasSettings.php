@@ -1,9 +1,9 @@
 <?php
 
-namespace Smartisan\Settings;
+namespace Ahmed3bead\Settings;
 
 use Settings;
-use Smartisan\Settings\Settings as SettingsManager;
+use Ahmed3bead\Settings\Settings as SettingsManager;
 
 trait HasSettings
 {

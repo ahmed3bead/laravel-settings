@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartisan\Settings\Facades;
+namespace Ahmed3bead\Settings\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

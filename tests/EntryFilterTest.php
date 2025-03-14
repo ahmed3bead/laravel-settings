@@ -1,10 +1,10 @@
 <?php
 
-namespace Smartisan\Settings\Tests;
+namespace Ahmed3bead\Settings\Tests;
 
-use Smartisan\Settings\EntryFilter;
-use Smartisan\Settings\Exceptions\ModelTypeException;
-use Smartisan\Settings\Tests\Models\User;
+use Ahmed3bead\Settings\EntryFilter;
+use Ahmed3bead\Settings\Exceptions\ModelTypeException;
+use Ahmed3bead\Settings\Tests\Models\User;
 
 class EntryFilterTest extends TestCase
 {

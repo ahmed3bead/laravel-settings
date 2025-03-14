@@ -1,9 +1,9 @@
 <?php
 
-namespace Smartisan\Settings\Tests;
+namespace Ahmed3bead\Settings\Tests;
 
-use Smartisan\Settings\Settings;
-use Smartisan\Settings\Tests\Models\User;
+use Ahmed3bead\Settings\Settings;
+use Ahmed3bead\Settings\Tests\Models\User;
 
 class HasSettingsTest extends TestCase
 {

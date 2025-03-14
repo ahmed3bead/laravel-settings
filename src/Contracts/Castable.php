@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartisan\Settings\Contracts;
+namespace Ahmed3bead\Settings\Contracts;
 
 interface Castable
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Smartisan\Settings\Tests;
+namespace Ahmed3bead\Settings\Tests;
 
-use Smartisan\Settings\Settings;
+use Ahmed3bead\Settings\Settings;
 
 class HelpersTest extends TestCase
 {

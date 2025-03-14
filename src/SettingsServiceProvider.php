@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartisan\Settings;
+namespace Ahmed3bead\Settings;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;

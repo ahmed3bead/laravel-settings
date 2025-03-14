@@ -1,8 +1,8 @@
 # App & Models Settings for Laravel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/smartisan/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/smartisan/laravel-settings)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/Ahmed3bead/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/Ahmed3bead/laravel-settings)
 [![GitHub Tests Action Status](https://github.com/itsmohd/laravel-settings/workflows/run-tests/badge.svg)](https://github.com/itsmohd/laravel-settings/actions?query=workflow%3Arun-tests)
-[![Total Downloads](https://img.shields.io/packagist/dt/smartisan/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/smartisan/laravel-settings)
+[![Total Downloads](https://img.shields.io/packagist/dt/Ahmed3bead/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/Ahmed3bead/laravel-settings)
 
 This package allows you to store application wide and model specific Laravel settings. Settings values
 are type-cast and stored properly. You can also define your own casts and store repository.
@@ -12,19 +12,19 @@ are type-cast and stored properly. You can also define your own casts and store 
 Install the package via composer:
 
 ```bash
-composer require smartisan/laravel-settings
+composer require ahmedebead/laravel-settings
 ```
 
 Publish the config file with:
 
 ```bash
-php artisan vendor:publish --provider="Smartisan\Settings\SettingsServiceProvider" --tag="config"
+php artisan vendor:publish --provider="Ahmed3bead\Settings\SettingsServiceProvider" --tag="config"
 ```
 
 Publish the migration file with:
 
 ```bash
-php artisan vendor:publish --provider="Smartisan\Settings\SettingsServiceProvider" --tag="migrations"
+php artisan vendor:publish --provider="Ahmed3bead\Settings\SettingsServiceProvider" --tag="migrations"
 ```
 
 And finally run the migration with:
@@ -176,7 +176,7 @@ You can use HasSettings trait on your Eloquent models as well
 1. First prepare your model
 
 ```php
-use Smartisan\Settings\HasSettings;
+use Ahmed3bead\Settings\HasSettings;
 
 class User extends Model
 {
@@ -198,7 +198,7 @@ If you don't want to use the database repository, you can easily create your own
 1. Create a class of your repository that implements Repository interface and implement the following methods
 
 ```php
-use Smartisan\Settings\Contracts\Repository;
+use Ahmed3bead\Settings\Contracts\Repository;
 
 class FileRepository implements Repository 
 {
@@ -244,7 +244,7 @@ The package allows you to easily create your own casting rules of any object typ
 when the value is being retrieved from the repository.
 
 ```php
-use Smartisan\Settings\Contracts\Castable;
+use Ahmed3bead\Settings\Contracts\Castable;
 
 class CustomCast implements Castable
 {

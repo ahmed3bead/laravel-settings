@@ -1,10 +1,10 @@
 <?php
 
-namespace Smartisan\Settings;
+namespace Ahmed3bead\Settings;
 
 use Illuminate\Support\Arr;
-use Smartisan\Settings\Contracts\Castable;
-use Smartisan\Settings\Exceptions\CastHandlerException;
+use Ahmed3bead\Settings\Contracts\Castable;
+use Ahmed3bead\Settings\Exceptions\CastHandlerException;
 
 class CastHandler
 {

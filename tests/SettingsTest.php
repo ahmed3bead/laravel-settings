@@ -1,12 +1,12 @@
 <?php
 
-namespace Smartisan\Settings\Tests;
+namespace Ahmed3bead\Settings\Tests;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Arr;
 use Settings;
-use Smartisan\Settings\Tests\Models\User;
+use Ahmed3bead\Settings\Tests\Models\User;
 
 class SettingsTest extends TestCase
 {
@@ -246,7 +246,7 @@ class SettingsTest extends TestCase
         $user = User::create(['name' => 'Mohammed']);
 
         $this->assertSame(
-            'settings.keys=k1&group=g1&excepts=k3,k4&for=Smartisan\Settings\Tests\Models\User',
+            'settings.keys=k1&group=g1&excepts=k3,k4&for=Ahmed3bead\Settings\Tests\Models\User',
             Settings::group('g1')->for($user)->except('k3', 'k4')->resolveCacheKey('k1')
         );
     }

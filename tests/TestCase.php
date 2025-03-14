@@ -1,10 +1,10 @@
 <?php
 
-namespace Smartisan\Settings\Tests;
+namespace Ahmed3bead\Settings\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
-use Smartisan\Settings\Facades\Settings;
-use Smartisan\Settings\SettingsServiceProvider;
+use Ahmed3bead\Settings\Facades\Settings;
+use Ahmed3bead\Settings\SettingsServiceProvider;
 
 class TestCase extends Orchestra
 {

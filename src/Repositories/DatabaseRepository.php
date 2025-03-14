@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartisan\Settings\Repositories;
+namespace Ahmed3bead\Settings\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Smartisan\Settings\CastHandler;
+use Ahmed3bead\Settings\CastHandler;
 
 class DatabaseRepository extends Repository
 {

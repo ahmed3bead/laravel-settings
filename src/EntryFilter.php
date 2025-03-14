@@ -1,9 +1,9 @@
 <?php
 
-namespace Smartisan\Settings;
+namespace Ahmed3bead\Settings;
 
 use Illuminate\Database\Eloquent\Model;
-use Smartisan\Settings\Exceptions\ModelTypeException;
+use Ahmed3bead\Settings\Exceptions\ModelTypeException;
 
 class EntryFilter
 {
@@ -32,7 +32,7 @@ class EntryFilter
      * Set the model owner of the settings entry.
      *
      * @param  mixed  $model
-     * @return \Smartisan\Settings\EntryFilter $this
+     * @return \Ahmed3bead\Settings\EntryFilter $this
      */
     public function setModel($model)
     {
@@ -49,7 +49,7 @@ class EntryFilter
      * Set the group name of the settings entry.
      *
      * @param  string  $group
-     * @return \Smartisan\Settings\EntryFilter $this
+     * @return \Ahmed3bead\Settings\EntryFilter $this
      */
     public function setGroup($group)
     {
@@ -62,7 +62,7 @@ class EntryFilter
      * Set the exempted settings entries.
      *
      * @param  string|array  $excepts
-     * @return \Smartisan\Settings\EntryFilter $this
+     * @return \Ahmed3bead\Settings\EntryFilter $this
      */
     public function setExcepts(...$excepts)
     {
