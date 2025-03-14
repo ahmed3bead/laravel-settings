@@ -12,6 +12,7 @@ are type-cast and stored properly. You can also define your own casts and store 
 Install the package via composer:
 
 ```bash
+
 composer require ahmedebead/laravel-settings
 ```
 
