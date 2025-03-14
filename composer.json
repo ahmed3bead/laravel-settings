@@ -1,5 +1,5 @@
 {
-    "name": "Ahmed3bead/laravel-settings",
+    "name": "ahmed3bead/laravel-settings",
     "description": "App & Models Settings for Laravel",
     "keywords": [
         "laravel-settings"
@@ -9,6 +9,10 @@
     "authors": [
         {
             "name": "Mohamed Isa",
+            "role": "Developer"
+        },
+        {
+            "name": "Ahmed Ebead",
             "role": "Developer"
         }
     ],
