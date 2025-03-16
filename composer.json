@@ -1,0 +1,63 @@
+{
+    "name": "ahmedebead/laravel-settings",
+    "description": "App & Models Settings for Laravel",
+    "keywords": [
+        "laravel-settings"
+    ],
+    "homepage": "https://github.com/ahmed3bead/settings",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mohamed Isa",
+            "role": "Developer"
+        },
+        {
+            "name": "Ahmed Ebead",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "ext-json": "*",
+        "php": "^8.2",
+        "illuminate/database": "^11.0 || ^12.0",
+        "illuminate/support": "^11.0 || ^12.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.13",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^9.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ahmed3bead\\Settings\\": "src"
+        },
+        "files": [
+            "src/Support/settings.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ahmed3bead\\Settings\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ahmed3bead\\Settings\\SettingsServiceProvider"
+            ],
+            "aliases": {
+                "Settings": "Ahmed3bead\\Settings\\Facades\\Settings"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
