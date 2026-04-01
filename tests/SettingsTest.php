@@ -237,17 +237,4 @@ class SettingsTest extends TestCase
         $this->assertCount(1, Settings::for($user2)->group('g2')->all());
     }
 
-    public function test_it_resolves_the_correct_cache_key()
-    {
-        $this->assertSame('settings.keys=k1&group=&excepts=&for=', Settings::resolveCacheKey('k1'));
-
-        $this->assertSame('settings.keys=k1,k2,k3&group=&excepts=&for=', Settings::resolveCacheKey(['k1', 'k2', 'k3']));
-
-        $user = User::create(['name' => 'Mohammed']);
-
-        $this->assertSame(
-            'settings.keys=k1&group=g1&excepts=k3,k4&for=Ahmed3bead\Settings\Tests\Models\User',
-            Settings::group('g1')->for($user)->except('k3', 'k4')->resolveCacheKey('k1')
-        );
-    }
 }

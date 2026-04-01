@@ -15,8 +15,8 @@ class CarbonPeriodCast implements Castable
     public function set(mixed $payload): array
     {
         return [
-            'start' => $payload->getStartDate(),
-            'end' => $payload->getEndDate(),
+            'start' => $payload->getStartDate()->toIso8601String(),
+            'end' => $payload->getEndDate()->toIso8601String(),
         ];
     }
 

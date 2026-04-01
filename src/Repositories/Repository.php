@@ -15,7 +15,7 @@ abstract class Repository implements RepositoryContract
     /**
      * Set settings filter.
      */
-    public function withFilter(EntryFilter $filter): Repository
+    public function withFilter(EntryFilter $filter): static
     {
         $this->entryFilter = $filter;
 

@@ -35,8 +35,8 @@ class CastHandler
 
         if (! $cast->handler) {
             return [
-                '$value' => $payload,
-                '$cast' => null,
+                '__sv__' => $payload,
+                '__sc__' => null,
             ];
         }
 
@@ -44,15 +44,15 @@ class CastHandler
             class_exists($cast->handler) &&
             Arr::exists(class_implements($cast->handler), Castable::class)) {
             return [
-                '$value' => app($cast->handler)->set($payload),
-                '$cast' => $cast->type,
+                '__sv__' => app($cast->handler)->set($payload),
+                '__sc__' => $cast->type,
             ];
         }
 
         if (is_object($cast->handler) && $cast->handler instanceof Castable) {
             return [
-                '$value' => ($cast->handler)->set($payload),
-                '$cast' => get_class($payload),
+                '__sv__' => ($cast->handler)->set($payload),
+                '__sc__' => $cast->type,
             ];
         }
 

@@ -33,7 +33,7 @@ class DatabaseRepository extends Repository
      */
     public function __construct()
     {
-        $this->connection = config('database.connection');
+        $this->connection = config('settings.repositories.database.connection');
 
         $this->table = config('settings.repositories.database.table');
 
@@ -85,9 +85,12 @@ class DatabaseRepository extends Repository
 
         $model = $this->entryFilter->getModel();
 
+        $group = $this->entryFilter->getGroup();
+
         DB::connection($this->connection)
             ->table($this->table)
             ->whereIn('key', $key->toArray())
+            ->where('group', $group)
             ->where(function (Builder $builder) use ($model) {
                 if ($model) {
                     return $builder->where('settingable_type', $this->determineModelMorphMapName())
@@ -107,6 +110,31 @@ class DatabaseRepository extends Repository
     public function all(): array
     {
         return $this->getEntries(null, null)->toArray();
+    }
+
+    /**
+     * Determine whether a settings entry for the given key exists.
+     */
+    public function exists(string $key): bool
+    {
+        $group = $this->entryFilter->getGroup();
+
+        $model = $this->entryFilter->getModel();
+
+        return DB::connection($this->connection)
+            ->table($this->table)
+            ->where('key', $key)
+            ->where('group', $group)
+            ->where(function (Builder $builder) use ($model) {
+                if ($model) {
+                    return $builder->where('settingable_type', $this->determineModelMorphMapName())
+                        ->where('settingable_id', $model->getKey());
+                }
+
+                return $builder->where('settingable_type', null)
+                    ->where('settingable_id', null);
+            })
+            ->exists();
     }
 
     /**
@@ -164,18 +192,37 @@ class DatabaseRepository extends Repository
      */
     protected function updateOrInsertSettingsEntry(string $key, mixed $value): bool
     {
+        $uniqueAttributes = [
+            'key' => $key,
+            'group' => $this->entryFilter->getGroup(),
+            'settingable_type' => $this->entryFilter->getModel() ? $this->determineModelMorphMapName() : null,
+            'settingable_id' => $this->entryFilter->getModel() ? $this->entryFilter->getModel()->getKey() : null,
+        ];
+
+        $payload = json_encode($this->castHandler->handle($value));
+
+        $exists = DB::connection($this->connection)
+            ->table($this->table)
+            ->where($uniqueAttributes)
+            ->exists();
+
+        if ($exists) {
+            return (bool) DB::connection($this->connection)
+                ->table($this->table)
+                ->where($uniqueAttributes)
+                ->update([
+                    'payload' => $payload,
+                    'updated_at' => now(),
+                ]);
+        }
+
         return DB::connection($this->connection)
             ->table($this->table)
-            ->updateOrInsert([
-                'key' => $key,
-                'group' => $this->entryFilter->getGroup(),
-                'settingable_type' => $this->entryFilter->getModel() ? $this->determineModelMorphMapName() : null,
-                'settingable_id' => $this->entryFilter->getModel() ? $this->entryFilter->getModel()->getKey() : null,
-            ], [
-                'payload' => json_encode($this->castHandler->handle($value)),
+            ->insert(array_merge($uniqueAttributes, [
+                'payload' => $payload,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ]));
     }
 
     /**

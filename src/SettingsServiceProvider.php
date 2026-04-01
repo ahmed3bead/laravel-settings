@@ -2,10 +2,11 @@
 
 namespace Ahmed3bead\Settings;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 
-class SettingsServiceProvider extends ServiceProvider
+class SettingsServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
      * Register any package services.
@@ -39,9 +40,27 @@ class SettingsServiceProvider extends ServiceProvider
                 __DIR__.'/../config/settings.php' => config_path('settings.php'),
             ], 'config');
 
-            $this->publishes([
-                __DIR__.'/../database/migrations/create_settings_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_settings_table.php'),
-            ], 'migrations');
+            if (! $this->migrationExists()) {
+                $this->publishes([
+                    __DIR__.'/../database/migrations/create_settings_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_settings_table.php'),
+                ], 'migrations');
+            }
         }
+    }
+
+    /**
+     * Get the services provided by the provider.
+     */
+    public function provides(): array
+    {
+        return ['settings'];
+    }
+
+    /**
+     * Determine whether the settings migration has already been published.
+     */
+    protected function migrationExists(): bool
+    {
+        return count(glob(database_path('migrations/*_create_settings_table.php'))) > 0;
     }
 }

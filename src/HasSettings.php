@@ -2,7 +2,7 @@
 
 namespace Ahmed3bead\Settings;
 
-use Settings;
+use Ahmed3bead\Settings\Facades\Settings;
 use Ahmed3bead\Settings\Settings as SettingsManager;
 
 trait HasSettings

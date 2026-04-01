@@ -18,19 +18,19 @@ class CastHandlerTest extends TestCase
 
         $date = Carbon::create();
         $payload = $castHandler->handle($date);
-        $this->assertSame(Carbon::class, $payload['$cast']);
+        $this->assertSame(Carbon::class, $payload['__sc__']);
 
         $period = CarbonPeriod::create(now(), now());
         $payload = $castHandler->handle($period);
-        $this->assertSame(CarbonPeriod::class, $payload['$cast']);
+        $this->assertSame(CarbonPeriod::class, $payload['__sc__']);
 
         $payload = $castHandler->handle([
             'k1' => $date,
             'k2' => $period,
         ]);
 
-        $this->assertSame('Carbon\Carbon', Arr::get($payload, 'k1')['$cast']);
-        $this->assertSame('Carbon\CarbonPeriod', Arr::get($payload, 'k2')['$cast']);
+        $this->assertSame('Carbon\Carbon', Arr::get($payload, 'k1')['__sc__']);
+        $this->assertSame('Carbon\CarbonPeriod', Arr::get($payload, 'k2')['__sc__']);
 
         $this->app['config']->set('settings.casts', [
             DummyClass::class => DummyCast::class,
@@ -38,8 +38,8 @@ class CastHandlerTest extends TestCase
 
         $dummyInstance = new DummyClass();
         $payload = $castHandler->handle($dummyInstance);
-        $this->assertSame('dummy value', $payload['$value']);
-        $this->assertSame(DummyClass::class, $payload['$cast']);
+        $this->assertSame('dummy value', $payload['__sv__']);
+        $this->assertSame(DummyClass::class, $payload['__sc__']);
     }
 
     public function test_it_can_accept_objects_as_casts_handler_in_settings_file()
@@ -52,7 +52,7 @@ class CastHandlerTest extends TestCase
 
         $dummyInstance = new DummyClass();
         $payload = $castHandler->handle($dummyInstance);
-        $this->assertSame('v1', $payload['$value']);
+        $this->assertSame('v1', $payload['__sv__']);
 
         $this->app['config']->set('settings.casts', [
             DummyClass::class => new AnotherCast('t2'),
@@ -60,6 +60,6 @@ class CastHandlerTest extends TestCase
 
         $dummyInstance = new DummyClass();
         $payload = $castHandler->handle($dummyInstance);
-        $this->assertSame('v2', $payload['$value']);
+        $this->assertSame('v2', $payload['__sv__']);
     }
 }

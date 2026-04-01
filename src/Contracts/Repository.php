@@ -26,4 +26,14 @@ interface Repository
      * The configured values of entry filter will be used to filter the settings entries.
      */
     public function all(): array;
+
+    /**
+     * Determine whether a settings entry for the given key exists.
+     */
+    public function exists(string $key): bool;
+
+    /**
+     * Set the entry filter for the repository.
+     */
+    public function withFilter(\Ahmed3bead\Settings\EntryFilter $filter): static;
 }

@@ -57,13 +57,17 @@ class Settings
      */
     public function get(string|array $key, mixed $default = null): mixed
     {
-        if (config('settings.cache.enabled')) {
-            return $this->cache->rememberForever($this->resolveCacheKey($key), function () use ($key, $default) {
-                return $this->getEntries($key, $default);
-            });
-        }
+        try {
+            if (config('settings.cache.enabled')) {
+                return $this->cache->rememberForever($this->resolveCacheKey($key), function () use ($key, $default) {
+                    return $this->getEntries($key, $default);
+                });
+            }
 
-        return $this->getEntries($key, $default);
+            return $this->getEntries($key, $default);
+        } finally {
+            $this->filter->clear();
+        }
     }
 
     /**
@@ -100,9 +104,13 @@ class Settings
      */
     public function exists(string $key): bool
     {
-        $entry = $this->get($key);
+        $exists = $this->repository
+            ->withFilter($this->filter)
+            ->exists($key);
 
-        return isset($entry);
+        $this->filter->clear();
+
+        return $exists;
     }
 
     /**
@@ -138,7 +146,7 @@ class Settings
     /**
      * Resolve settings entry caching key.
      */
-    public function resolveCacheKey(string|null|array $keys): string
+    protected function resolveCacheKey(string|null|array $keys): string
     {
         $prefix = config('settings.cache.prefix');
 
@@ -146,7 +154,8 @@ class Settings
 
         $group = $this->filter->getGroup();
 
-        $for = $this->filter->getModel() ? get_class($this->filter->getModel()) : null;
+        $model = $this->filter->getModel();
+        $for = $model ? get_class($model) . ':' . $model->getKey() : null;
 
         $excepts = implode(',', $this->filter->getExcepts());
 
@@ -196,6 +205,12 @@ class Settings
             if ($this->cache->has($cacheKey)) {
                 $this->cache->forget($cacheKey);
             }
+
+            $allCacheKey = $this->resolveCacheKey(null);
+
+            if ($this->cache->has($allCacheKey)) {
+                $this->cache->forget($allCacheKey);
+            }
         }
     }
 
@@ -205,8 +220,8 @@ class Settings
     protected function stripSettingsPayload(string|null|array &$payload)
     {
         if (is_array($payload)) {
-            if (array_key_exists('$value', $payload) && array_key_exists('$cast', $payload)) {
-                $castType = $payload['$cast'];
+            if (array_key_exists('__sv__', $payload) && array_key_exists('__sc__', $payload)) {
+                $castType = $payload['__sc__'];
 
                 if ($castType) {
                     if (! array_key_exists($castType, config('settings.casts'))) {
@@ -214,10 +229,10 @@ class Settings
                     }
 
                     return $payload = app(config('settings.casts')[$castType])
-                        ->get($payload['$value']);
+                        ->get($payload['__sv__']);
                 }
 
-                $payload = $payload['$value'];
+                $payload = $payload['__sv__'];
             } else {
                 array_walk($payload, [$this, 'stripSettingsPayload']);
             }
