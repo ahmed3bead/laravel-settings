@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ahmed3bead/laravel-settings/main/laravel-settings-banner.png" width="100%" alt="Laravel Settings Banner">
+</p>
 # Laravel Settings
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/ahmedebead/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/ahmedebead/laravel-settings)
