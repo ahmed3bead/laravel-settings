@@ -1,316 +1,489 @@
-# App & Models Settings for Laravel
+# Laravel Settings
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/Ahmed3bead/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/Ahmed3bead/laravel-settings)
-[![GitHub Tests Action Status](https://github.com/itsmohd/laravel-settings/workflows/run-tests/badge.svg)](https://github.com/itsmohd/laravel-settings/actions?query=workflow%3Arun-tests)
-[![Total Downloads](https://img.shields.io/packagist/dt/Ahmed3bead/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/Ahmed3bead/laravel-settings)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ahmedebead/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/ahmedebead/laravel-settings)
+[![Total Downloads](https://img.shields.io/packagist/dt/ahmedebead/laravel-settings.svg?style=flat-square)](https://packagist.org/packages/ahmedebead/laravel-settings)
+[![License](https://img.shields.io/packagist/l/ahmedebead/laravel-settings.svg?style=flat-square)](LICENSE.md)
 
-This package allows you to store application wide and model specific Laravel settings. Settings values
-are type-cast and stored properly. You can also define your own casts and store repository.
+A simple, flexible settings package for Laravel. Store application-wide settings or settings scoped to any Eloquent model. Values are automatically type-cast when stored and restored when retrieved.
+
+**Requires:** PHP 8.2+ · Laravel 11 / 12 / 13
+
+---
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Basic Usage](#basic-usage)
+  - [Storing settings](#storing-settings)
+  - [Retrieving settings](#retrieving-settings)
+  - [Checking existence](#checking-existence)
+  - [Deleting settings](#deleting-settings)
+- [Scoping](#scoping)
+  - [Model-specific settings](#model-specific-settings)
+  - [Groups](#groups)
+  - [Excluding keys](#excluding-keys)
+  - [Combining scopes](#combining-scopes)
+- [HasSettings trait](#hassettings-trait)
+- [The `settings()` helper](#the-settings-helper)
+- [Caching](#caching)
+- [Type Casting](#type-casting)
+  - [Built-in casts](#built-in-casts)
+  - [Custom casts](#custom-casts)
+- [Custom Repository](#custom-repository)
+- [Testing](#testing)
+
+---
 
 ## Installation
 
-Install the package via composer:
-
 ```bash
-
 composer require ahmedebead/laravel-settings
 ```
 
-Publish the config file with:
+The service provider and `Settings` facade are registered automatically via package auto-discovery.
+
+Publish the config file:
 
 ```bash
 php artisan vendor:publish --provider="Ahmed3bead\Settings\SettingsServiceProvider" --tag="config"
 ```
 
-Publish the migration file with:
+Publish and run the migration:
 
 ```bash
 php artisan vendor:publish --provider="Ahmed3bead\Settings\SettingsServiceProvider" --tag="migrations"
-```
-
-And finally run the migration with:
-
-```bash
 php artisan migrate
 ```
 
-## Usage
+> Running `vendor:publish --tag="migrations"` a second time is safe — it will not create a duplicate migration file if one already exists.
 
-The package provides various APIs to access the settings manager. You can access it with Settings facade, settings()
-helper method and via HasSettings trait on your models.
+---
 
-### Store Settings
+## Configuration
 
-You can set single entry, or multiple entries of settings. The values of objects will be cast according to the rules
-defined in settings.php config file.
-
-* One Entry
+After publishing, the config file lives at `config/settings.php`.
 
 ```php
-Settings::set('key', 'value');
+return [
+
+    // Which repository driver to use (default: database)
+    'default' => env('SETTINGS_REPOSITORY_DEFAULT', 'database'),
+
+    'repositories' => [
+        'database' => [
+            'handler'    => Ahmed3bead\Settings\Repositories\DatabaseRepository::class,
+            'connection' => null,   // null = use the app's default DB connection
+            'table'      => 'settings',
+        ],
+    ],
+
+    'cache' => [
+        'enabled' => env('SETTINGS_CACHE_ENABLED', false),
+        'store'   => null,   // null = use the app's default cache store
+        'prefix'  => null,
+    ],
+
+    'casts' => [
+        Carbon\Carbon::class       => Ahmed3bead\Settings\Casts\CarbonCast::class,
+        Carbon\CarbonPeriod::class => Ahmed3bead\Settings\Casts\CarbonPeriodCast::class,
+    ],
+
+];
 ```
 
-* Multiple Entries
+---
 
-You can set multiple settings entries by passing an associative array of keys and values. Casts will be applied on all
-the payload, even on nested arrays.
+## Basic Usage
+
+You can use the `Settings` facade, the `settings()` helper, or the `HasSettings` trait — all three give you the same API.
+
+### Storing settings
 
 ```php
+use Settings;
+
+// Single key
+Settings::set('timezone', 'UTC');
+
+// Multiple keys at once
 Settings::set([
-    'k1' => Carbon::now(),
-    'k2' => [
-        'k3' => $user,
-        'k4' => [
-            'k5' => $model
-        ],  
-    ]
+    'timezone' => 'UTC',
+    'language' => 'en',
+    'per_page' => 25,
 ]);
 ```
 
-* Specify Settings Group
-
-It's possible to categorize your settings into groups by calling group method.
+Values can be any PHP type — strings, integers, booleans, arrays, and objects (see [Type Casting](#type-casting)):
 
 ```php
-Settings::group('name')->set('key', 'value');
+use Carbon\Carbon;
 
-Settings::group('name')->set([
-    'k1' => 'v1',
-    'k2' => 'v2',
+Settings::set('launched_at', Carbon::now());   // stored and restored as Carbon
+Settings::set('flags', ['feature_x' => true]); // plain arrays work too
+```
+
+Nested arrays are fully supported. Casts are applied recursively:
+
+```php
+Settings::set('report', [
+    'generated_at' => Carbon::now(),   // will be cast
+    'filters' => [
+        'from' => Carbon::yesterday(), // also cast, however deep
+        'limit' => 100,
+    ],
 ]);
 ```
 
-* Model Specific Settings
+---
 
-It's also possible to set settings for a specific model by calling for method
+### Retrieving settings
 
 ```php
-Settings::for($model)->set('key', 'value');
+// Single key — returns the value or null
+$tz = Settings::get('timezone');
 
-Settings::for($model)->set([
-    'k1' => 'v1',
-    'k2' => 'v2',
-]);
+// With a default value when the key does not exist
+$tz = Settings::get('timezone', 'UTC');
+
+// Multiple keys at once — returns an associative array
+$values = Settings::get(['timezone', 'language']);
+// ['timezone' => 'UTC', 'language' => 'en']
+
+// Multiple keys with a shared default for any missing ones
+$values = Settings::get(['timezone', 'missing_key'], 'default');
+// ['timezone' => 'UTC', 'missing_key' => 'default']
+
+// All settings (global scope — no model, no group)
+$all = Settings::all();
 ```
 
-* Mixing Filters
+---
 
-You can mix all filters together like this:
+### Checking existence
+
+`exists()` performs a database count query, so it correctly reports `true` even when a key is stored with a `null` value.
 
 ```php
-Settings::for($model)->group('name')->set('key', 'value');
+if (Settings::exists('timezone')) {
+    // key is in the database
+}
+
+// Returns false for keys that have never been set
+Settings::exists('unknown_key'); // false
+
+// Scoped to a model or group (see Scoping section)
+Settings::for($user)->exists('theme');
+Settings::group('billing')->exists('vat_rate');
 ```
 
-### Retrieve Settings
+---
 
-You can retrieve one or multiple entries and specify the default value if not exist.
-
-* One Entry
+### Deleting settings
 
 ```php
-Settings::get('k1', 'default');
+// Single key
+Settings::forget('timezone');
+
+// Multiple keys
+Settings::forget(['timezone', 'language']);
 ```
 
-* Multiple Entries
+---
 
-If the entry key does not exist, the default value will be placed instead
+## Scoping
+
+Every method (`set`, `get`, `all`, `exists`, `forget`) respects the active scope. Scopes are fluent and do not leak — each call is independent.
+
+### Model-specific settings
+
+Attach settings to any Eloquent model with `for()`. Two users with the same key never interfere with each other.
 
 ```php
-Settings::get(['k1', 'k2', 'k3'], 'default');
+$user1 = User::find(1);
+$user2 = User::find(2);
+
+Settings::for($user1)->set('theme', 'dark');
+Settings::for($user2)->set('theme', 'light');
+
+Settings::for($user1)->get('theme'); // 'dark'
+Settings::for($user2)->get('theme'); // 'light'
+
+Settings::for($user1)->all();
+// ['theme' => 'dark']
 ```
 
-* All Entries
+> Settings stored without `for()` are global and separate from model-specific ones.
 
-If you want to retrieve all entries, you simply call all method. You can also specify the model or group. Also to
-excempt some specific keys.
+---
 
-**Note:** Remember that retrieving all entries without specifying the group or model, will retrieve all entries that has
-no group or model set. You can consider these as (global app settings).
+### Groups
+
+Use `group()` to namespace settings into logical categories.
 
 ```php
+Settings::group('email')->set('driver', 'smtp');
+Settings::group('email')->set('from', 'hello@example.com');
+
+Settings::group('billing')->set('vat_rate', 20);
+
+Settings::group('email')->all();
+// ['driver' => 'smtp', 'from' => 'hello@example.com']
+
+Settings::group('billing')->all();
+// ['vat_rate' => 20]
+
+// Global settings (no group) are unaffected
 Settings::all();
-
-Settings::for($model)->all();
-
-Settings::for($model)->group('name')->all();
-
-Settings::except('k1', 'k2')->for($model)->group('name')->all();
-
-Settings::except('k1')->for($model)->group('name')->all();
+// []
 ```
 
-### Forget Entry
+---
 
-You can remove entries by calling forget method.
+### Excluding keys
+
+Use `except()` to skip one or more keys when calling `all()`:
 
 ```php
-Settings::forget('key');
+Settings::except('secret_key')->all();
 
-Settings::for($model)->group('name')->forget('key');
+Settings::except('k1', 'k2')->all();
+
+Settings::except(['k1', 'k2'])->all();
 ```
 
-### Determine Existance
+---
 
-You can determine whether the given settings entry key exists or not
+### Combining scopes
+
+All scoping methods can be chained in any order:
 
 ```php
-Settings::exist('key');
+// Model + group
+Settings::for($user)->group('preferences')->set('lang', 'ar');
 
-Settings::for($model)->exist('key');
+// Read it back
+Settings::for($user)->group('preferences')->get('lang');
 
-Settings::for($model)->group('name')->exist('key');
+// All settings for a user in a group, excluding one key
+Settings::for($user)->group('preferences')->except('lang')->all();
+
+// forget is scoped too — only removes 'lang' from group 'preferences' for $user
+Settings::for($user)->group('preferences')->forget('lang');
 ```
 
-### Helper Method
+---
 
-The package also ships with a settings helper method, you can use it instead of using Settings Facade
+## HasSettings Trait
 
-```php
-settings()->set('key', 'value');
-...
-```
-
-### HasSettings Trait
-
-You can use HasSettings trait on your Eloquent models as well
-
-1. First prepare your model
+Add the `HasSettings` trait to any Eloquent model to get a `settings()` method that automatically scopes to that model instance. It is equivalent to calling `Settings::for($this)`.
 
 ```php
 use Ahmed3bead\Settings\HasSettings;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-    use HasSettings;    
+    use HasSettings;
 }
 ```
 
-2. Now you can call settings() method on that model. This is equivelant to ```Settings::for($model)```
-
 ```php
-$user->settings()->set('k1', 'v1');
-...
+$user = User::find(1);
+
+$user->settings()->set('theme', 'dark');
+$user->settings()->set(['lang' => 'en', 'per_page' => 20]);
+
+$user->settings()->get('theme');         // 'dark'
+$user->settings()->all();               // ['theme' => 'dark', 'lang' => 'en', 'per_page' => 20]
+$user->settings()->exists('theme');     // true
+$user->settings()->forget('theme');
+
+// Group scoping still works
+$user->settings()->group('billing')->set('vat', 20);
+$user->settings()->group('billing')->get('vat'); // 20
 ```
 
-## Custom Repositories
+---
 
-If you don't want to use the database repository, you can easily create your own settings repository. To do that
+## The `settings()` helper
 
-1. Create a class of your repository that implements Repository interface and implement the following methods
-
-```php
-use Ahmed3bead\Settings\Contracts\Repository;
-
-class FileRepository implements Repository 
-{
-    public function get($key,$default = null) {
-        //
-    }
-    
-    public function set($key,$value = null) {
-        //
-    }
-    
-    public function forget($key) {
-        //
-    }
-    
-    public function all() {
-        //
-    }
-}
-```
-
-2. In settings configuration file, add your own repository config to repositories attribute
+A global `settings()` helper is included. It returns the same `Settings` instance as the facade.
 
 ```php
-    'repositories' => [
-        ...
-        
-        'file' => [
-            ...
-        ]
-    ],
+settings()->set('key', 'value');
+settings()->get('key');
+settings()->for($user)->set('theme', 'dark');
 ```
 
-3. Change the default repository in settings config file to your own repository implementation
+---
 
-## Custom Casts
+## Caching
 
-The package allows you to easily create your own casting rules of any object type.
+Enable caching in `config/settings.php` or via an environment variable:
 
-1. Create your own cast class that implements Castable interface.
+```dotenv
+SETTINGS_CACHE_ENABLED=true
+```
 
-**Note:** The set method is called when the value of the entries is being stored to the repository, and the get method is called
-when the value is being retrieved from the repository.
+Or in the config file directly:
+
+```php
+'cache' => [
+    'enabled' => true,
+    'store'   => 'redis',  // any cache store configured in config/cache.php
+    'prefix'  => 'app',
+],
+```
+
+**How it works:**
+
+- `get()` and `all()` cache results forever until the underlying data changes.
+- `set()` and `forget()` automatically invalidate both the key-specific cache entry and the `all()` cache entry.
+- Cache keys include the model class, model primary key, group, and excluded keys — so two different users always get isolated cache entries.
+
+---
+
+## Type Casting
+
+When you store an object, the package looks up the matching cast handler and serializes the value. On retrieval, the original object type is restored transparently.
+
+### Built-in casts
+
+| PHP type | Stored as | Restored as |
+|---|---|---|
+| `Carbon\Carbon` | ISO-8601 date string | `Carbon\Carbon` |
+| `Carbon\CarbonPeriod` | `{start, end}` ISO strings | `Carbon\CarbonPeriod` |
+| Everything else | JSON-encoded as-is | Decoded as-is |
+
+### Custom casts
+
+**Step 1 — Create a cast class** implementing `Castable`:
 
 ```php
 use Ahmed3bead\Settings\Contracts\Castable;
 
-class CustomCast implements Castable
+class MoneyCast implements Castable
 {
-    public function set($payload) {
-        //
+    /**
+     * Called when the value is being saved.
+     * Return any JSON-serializable value.
+     */
+    public function set(mixed $payload): array
+    {
+        return [
+            'amount'   => $payload->getAmount(),
+            'currency' => $payload->getCurrency(),
+        ];
     }
-    
-    public function get($payload) {
-        //
+
+    /**
+     * Called when the value is being loaded.
+     * Reconstruct and return the original object.
+     */
+    public function get(mixed $payload): Money
+    {
+        return new Money($payload['amount'], $payload['currency']);
     }
 }
 ```
 
-2. Add the casts to the array of casts in settings config file
+**Step 2 — Register it** in `config/settings.php`:
 
 ```php
 'casts' => [
-    ...
-    CustomDataType::class => CustomCast::class
-]
-```
-
-**Note:** If you want to pass a parameter to your cast, you can set an object of the cast instead of cast class name
-
-```php
-'casts' => [
-    ...
-    CustomDataType::class => new CustomCast('param')
-]
-```
-
-## Settings Cache
-
-You can easily enable or disable caching settings in settings.php config file. You can also specify which caching store to use
-
-```php
-'cache' => [
-    'enabled' => env('SETTINGS_CACHE_ENABLED', false),
-    'store' => null,
-    'prefix' => null,
+    Money::class => MoneyCast::class,
 ],
 ```
 
-## Testing
+**Step 3 — Use it normally:**
 
-To run the package's tests, simply call the following command
+```php
+Settings::set('price', new Money(1000, 'USD'));
+
+$price = Settings::get('price'); // Money instance
+```
+
+**Passing constructor arguments to a cast:**
+
+If your cast needs configuration, register an object instance instead of a class name:
+
+```php
+'casts' => [
+    MyType::class => new MyCast('some-parameter'),
+],
+```
+
+---
+
+## Custom Repository
+
+The database driver is the default, but you can replace it with any storage backend.
+
+**Step 1 — Create a repository class** that extends the abstract base and implements all required methods:
+
+```php
+use Ahmed3bead\Settings\Repositories\Repository;
+
+class RedisRepository extends Repository
+{
+    public function get(string|array $key, mixed $default = null): mixed
+    {
+        // read from Redis using $this->entryFilter for scoping
+    }
+
+    public function set(string|array $key, mixed $value = null): void
+    {
+        // write to Redis
+    }
+
+    public function forget(string|array $key): void
+    {
+        // delete from Redis
+    }
+
+    public function all(): array
+    {
+        // return all entries matching $this->entryFilter
+    }
+
+    public function exists(string $key): bool
+    {
+        // return true if $key exists
+    }
+}
+```
+
+> `$this->entryFilter` gives you the active `EntryFilter` instance with `getModel()`, `getGroup()`, and `getExcepts()`.
+
+**Step 2 — Register it** in `config/settings.php`:
+
+```php
+'repositories' => [
+    'database' => [ ... ],
+
+    'redis' => [
+        'handler' => App\Settings\RedisRepository::class,
+    ],
+],
+```
+
+**Step 3 — Set it as default:**
+
+```php
+'default' => 'redis',
+```
+
+---
+
+## Testing
 
 ```bash
 composer test
 ```
 
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Credits
-
-- [Mohammed Isa](https://github.com/iamohd)
-- [All Contributors](../../contributors)
-
-## Alternatives
-
-* [spatie/laravel-settings](https://github.com/spatie/laravel-settings)
-* [akaunting/laravel-setting](https://github.com/akaunting/laravel-setting)
+---
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [LICENSE.md](LICENSE.md) for more information.
